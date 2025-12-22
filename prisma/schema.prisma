@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  applications LoanApplication[]
+}
+
+model LoanProduct {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId
+  name        String
+  description String?
+  interest    Float
+  createdAt   DateTime @default(now())
+  applications LoanApplication[]
+}
+
+model LoanApplication {
+  id             String   @id @map("_id") @default(auto()) @db.ObjectId
+  productId      String   @db.ObjectId
+  applicantName  String
+  applicantEmail String
+  principal      Float
+  tenureMonths   Int
+  rate           Float
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  createdBy      String?  @db.ObjectId
+
+  product LoanProduct @relation(fields: [productId], references: [id])
+  createdByUser User? @relation(fields: [createdBy], references: [id])
+  collaterals Collateral[]
+}
+
+model Collateral {
+  id            String   @id @map("_id") @default(auto()) @db.ObjectId
+  applicationId String   @db.ObjectId
+  fundName      String
+  folio         String
+  units         Float
+  nav           Float
+  createdAt     DateTime @default(now())
+
+  application LoanApplication @relation(fields: [applicationId], references: [id])
+}
