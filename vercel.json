@@ -1,0 +1,7 @@
+{
+  "installCommand": "npm ci && npm run prisma:generate",
+  "buildCommand": "npm run vercel-build",
+  "build": {
+    "env": {}
+  }
+}
